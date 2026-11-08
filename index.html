@@ -32,16 +32,16 @@ li{margin:3px 0}
 <body>
 <main>
 <h1>Ward air in motion</h1>
-<p class="lede">An animated version of a schematic figure showing how respiratory particles leave an infected patient, travel through the air of a hospital bay, and where ventilation, portable HEPA air cleaners, ultraviolet light and masks act. Switch each control off and on to see what it does.</p>
+<p class="lede">An animated version of a schematic figure showing how respiratory particles leave an infected patient, travel through the air of a hospital bay, and where ventilation, portable HEPA air cleaners, ultraviolet light and masks act. All the mitigations start switched off; switch each one on to see what it does.</p>
 
 <div class="stage"><canvas id="cv" width="2160" height="1170" role="img" aria-label="Animated cross-section of a hospital bay. An infected patient on the left breathes out particles: large ones fall onto the bed and table within about a metre, small ones drift across the bay. A member of staff stands under a far-UVC lamp, where particles are inactivated and drawn as open circles. A sink releases splash and aerosol. A patient in the middle bed sheds skin squames when the bed is made. Ventilation supply and extract are in the ceiling, a HEPA air cleaner draws air in near the floor, an upper-room UV-C lamp treats the air above head height, and a masked infected patient on the right releases few particles."></canvas></div>
 
 <div class="controls" aria-label="Controls">
-<label class="toggle"><input type="checkbox" id="vent" checked> Ventilation</label>
-<label class="toggle"><input type="checkbox" id="hepa" checked> HEPA air cleaner</label>
-<label class="toggle"><input type="checkbox" id="far" checked> Far-UVC</label>
-<label class="toggle"><input type="checkbox" id="upper" checked> Upper-room UV-C</label>
-<label class="toggle"><input type="checkbox" id="mask" checked> Mask (right-hand patient)</label>
+<label class="toggle"><input type="checkbox" id="vent"> Ventilation</label>
+<label class="toggle"><input type="checkbox" id="hepa"> HEPA air cleaner</label>
+<label class="toggle"><input type="checkbox" id="far"> Far-UVC</label>
+<label class="toggle"><input type="checkbox" id="upper"> Upper-room UV-C</label>
+<label class="toggle"><input type="checkbox" id="mask"> Mask (right-hand patient)</label>
 <button id="play" type="button">Pause</button>
 <button id="reset" type="button">Reset</button>
 <label class="speed">Speed <input type="range" id="speed" min="0.5" max="3" step="0.25" value="1" aria-label="Animation speed"></label>
@@ -52,7 +52,7 @@ li{margin:3px 0}
 <li><b>Particle size is continuous.</b> The largest particles follow ballistic paths and land on the bed and bedside table within about a metre (direct deposition, then surface contact). Smaller particles stay airborne, densest near the source (short range) and carried through the shared air of the bay (long range).</li>
 <li><b>Ventilation</b> dilutes the air and the ceiling extract removes particles. <b>The HEPA air cleaner</b> draws air in low down and returns filtered air upwards.</li>
 <li><b>Ultraviolet light</b> inactivates particles rather than removing them: far-UVC (222 nm) can be used in the occupied zone, upper-room UV-C only above head height. Inactivated particles turn into open grey circles, with a brief violet flash at the moment of inactivation.</li>
-<li><b>Source control:</b> the masked patient on the right releases far fewer particles. Turn the mask off to compare.</li>
+<li><b>Source control:</b> the masked patient on the right releases far fewer particles. Turn the mask on to compare.</li>
 <li><b>Skin squames</b> (grey flakes, 4 to 25 µm) are shed in very large numbers and resuspended when the bed is made; many carry bacteria such as <i>Staphylococcus aureus</i>. <b>The hand wash sink</b> releases splash and drain aerosol (blue).</li>
 </ul>
 
@@ -68,7 +68,7 @@ const RED='#D55E00', WATER='#2B88C8', SQF='#D4D4D4', SQE='#4D4D4D', BUG='#5a3d14
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 const bg=new Image(); bg.src='background.png'; const lb=new Image(); lb.src='labels.png';
 const $=id=>document.getElementById(id);
-const on={vent:true,hepa:true,far:true,upper:true,mask:true};
+const on={vent:false,hepa:false,far:false,upper:false,mask:false};
 ['vent','hepa','far','upper','mask'].forEach(k=>$(k).addEventListener('change',e=>on[k]=e.target.checked));
 let speed=1; $('speed').addEventListener('input',e=>speed=+e.target.value);
 let running=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
