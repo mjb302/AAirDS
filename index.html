@@ -194,13 +194,16 @@ function draw(){
   }
   ctx.globalAlpha=1;
   if(lb.complete)ctx.drawImage(lb,0,0,M.W,M.H);
-  if(!on.mask){ctx.fillStyle=RED;ctx.beginPath();ctx.arc(X(9.95),Y(1.25),0.168*SX,0,7);ctx.fill();}
+  if(!on.mask){ctx.fillStyle=RED;ctx.beginPath();ctx.arc(X(9.95),Y(1.25),0.168*SX,0,7);ctx.fill();
+    // swap the right-hand patient's label to match the toggle
+    ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.roundRect(X(9.0),Y(2.1),X(11.95)-X(9.0),Y(1.66)-Y(2.1),8);ctx.fill();
+    ctx.font='28px "DejaVu Sans",Verdana,system-ui,sans-serif';ctx.fillStyle=RED;ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText('Infected patient without a mask:',X(9.05),Y(1.88)-17);ctx.fillText('no source control, more particles',X(9.05),Y(1.88)+17);}
   const offTag=(x,y,txt)=>{ctx.font='600 26px system-ui,sans-serif';const w=ctx.measureText(txt).width+20;ctx.fillStyle='rgba(60,60,60,0.85)';ctx.beginPath();ctx.roundRect(X(x)-w/2,Y(y)-18,w,36,18);ctx.fill();ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,X(x),Y(y)+1);};
   if(!on.far)offTag(3.2,2.72,'Far-UVC off');
   if(!on.vent)offTag(6.05,2.72,'Ventilation off');
   if(!on.hepa)offTag(8.05,1.4,'HEPA off');
   if(!on.upper)offTag(10.6,2.55,'UV-C off');
-  if(!on.mask)offTag(10.6,1.7,'No mask');
   if(t%9<2.5){ctx.font='italic 24px system-ui,sans-serif';ctx.fillStyle=SQE;ctx.textAlign='center';ctx.fillText('bed making',X(6.0),Y(0.5));}
 }
 
