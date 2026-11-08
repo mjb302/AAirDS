@@ -110,6 +110,9 @@ function flow(x,y){
     const ex=7.72-x, ey=0.55-y, d=Math.hypot(ex,ey); if(d<3.2&&x<7.75){const s=0.6/(d+0.35);u+=s*ex/d;v+=s*ey/d;}
     if(Math.abs(x-8.05)<0.3&&y>1.17&&y<2.7){v+=0.9*(1-(y-1.17)/1.6);}
   }
+  if(x>11.2)v+=0.35*(x-11.2)/0.8; if(x<0.6&&y>0.3)v-=0.2*(0.6-x)/0.6; // air turns at the walls
+  // thermal plumes: warm air rising above each person carries small particles towards the ceiling
+  for(const hx of [0.75,3.2,5.35,9.95]){const d=x-hx;const top=hx===3.2?1.75:1.4;if(y>top-0.1){const g=Math.exp(-d*d/0.12);v+=0.45*g;u+=-0.15*d*g;}}
   return [u,v];
 }
 
@@ -152,9 +155,9 @@ function step(dt){
     if(p.k==='L'||p.k==='W'){p.vy-=2.2*dt;p.vx*=1-0.15*dt;}
     else{
       const tau=p.k==='S'||p.k==='A'?0.7:(p.k==='M'?0.5:0.6);
-      const sett=p.k==='M'?-0.2:(p.k==='Q'?-0.18:0);
+      const sett=p.k==='M'?-0.2:(p.k==='Q'?-0.18:(p.k==='S'&&p.age<25?0.1*(1-p.age/25):0)); // warm breath rises
       p.vx+=(fu-p.vx)*dt/tau; p.vy+=(fv+sett-p.vy)*dt/tau;
-      const sig=p.k==='Q'?0.05:0.13;
+      const sig=p.k==='Q'?0.05:(p.k==='S'||p.k==='A'?0.2:0.13);
       p.x+=randn()*sig*Math.sqrt(dt); p.y+=randn()*sig*Math.sqrt(dt);
     }
     p.x+=p.vx*dt; p.y+=p.vy*dt;
