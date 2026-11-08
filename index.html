@@ -20,11 +20,6 @@ canvas{display:block;width:100%;height:auto}
 button{font:inherit;font-size:.92rem;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer}
 button:hover,.toggle:hover{border-color:#999}
 .speed{display:inline-flex;align-items:center;gap:8px;font-size:.92rem;color:var(--muted)}
-.counters{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:12px 0 18px}
-.c{background:var(--panel);border-radius:8px;padding:8px 12px}
-.c b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums;line-height:1.2}
-.c span{font-size:.85rem;color:var(--muted)}
-.c.red b{color:var(--red)}.c.green b{color:var(--green)}.c.violet b{color:var(--violet)}.c.grey b{color:#555}
 h2{font-size:1.15rem;margin:22px 0 6px}
 ul{padding-left:1.2em;margin:6px 0}
 li{margin:3px 0}
@@ -52,14 +47,6 @@ li{margin:3px 0}
 <label class="speed">Speed <input type="range" id="speed" min="0.5" max="3" step="0.25" value="1" aria-label="Animation speed"></label>
 </div>
 
-<div class="counters" aria-live="off">
-<div class="c red"><b id="nStaff">0</b><span>infectious particles inhaled by the member of staff</span></div>
-<div class="c red"><b id="nPt">0</b><span>inhaled by the patient in the middle bed</span></div>
-<div class="c violet"><b id="nUV">0</b><span>inactivated by ultraviolet light</span></div>
-<div class="c green"><b id="nHepa">0</b><span>removed by the HEPA air cleaner</span></div>
-<div class="c grey"><b id="nExt">0</b><span>removed by the ventilation extract</span></div>
-</div>
-
 <h2>What to look for</h2>
 <ul>
 <li><b>Particle size is continuous.</b> The largest particles follow ballistic paths and land on the bed and bedside table within about a metre (direct deposition, then surface contact). Smaller particles stay airborne, densest near the source (short range) and carried through the shared air of the bay (long range).</li>
@@ -69,7 +56,7 @@ li{margin:3px 0}
 <li><b>Skin squames</b> (grey flakes, 4 to 25 µm) are shed in very large numbers and resuspended when the bed is made; many carry bacteria such as <i>Staphylococcus aureus</i>. <b>The hand wash sink</b> releases splash and drain aerosol (blue).</li>
 </ul>
 
-<p class="note">Schematic, not a physical simulation: particle numbers, speeds, airflow and inactivation rates are illustrative and not to scale, and the counters show how the picture changes, not real exposure. Terminology follows the WHO 2024 global technical consultation on airborne transmission. Squame figures from Beggs and colleagues (2015). Colours are chosen to remain distinguishable with common forms of colour blindness. Accompanies a review on airborne infection on older people's wards, in preparation for <i>Age and Ageing</i>. Dr Matthew Butler, Cambridge University Hospitals NHS Foundation Trust.</p>
+<p class="note">Schematic, not a physical simulation: particle numbers, speeds, airflow and inactivation rates are illustrative and not to scale; it illustrates concepts and shows no measured or modelled results. Terminology follows the WHO 2024 global technical consultation on airborne transmission. Squame figures from Beggs and colleagues (2015). Colours are chosen to remain distinguishable with common forms of colour blindness. Accompanies a review on airborne infection on older people's wards, in preparation for <i>Age and Ageing</i>. Dr Matthew Butler, Cambridge University Hospitals NHS Foundation Trust.</p>
 </main>
 
 <script>
@@ -221,7 +208,6 @@ function frame(now){
   const real=Math.min(0.05,(now-last)/1000); last=now;
   if(running){let rem=real*speed;while(rem>0){const d=Math.min(0.02,rem);step(d);rem-=d;}}
   draw();
-  if(now-lastUI>250){lastUI=now;$('nStaff').textContent=cnt.staff;$('nPt').textContent=cnt.pt;$('nUV').textContent=cnt.uv;$('nHepa').textContent=cnt.hepa;$('nExt').textContent=cnt.ext;}
   requestAnimationFrame(frame);
 }
 // warm up a few seconds so the plume is visible at once
