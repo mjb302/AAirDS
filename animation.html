@@ -20,6 +20,9 @@ canvas{display:block;width:100%;height:auto}
 button{font:inherit;font-size:.92rem;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer}
 button:hover,.toggle:hover{border-color:#999}
 .speed{display:inline-flex;align-items:center;gap:8px;font-size:.92rem;color:var(--muted)}
+.hint{font-size:.88rem;color:var(--muted);display:inline-flex;align-items:center;gap:6px;flex-basis:100%}
+.sw{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #999}
+.sw.off{background:#D55E00}.sw.on{background:#007A5E}
 h2{font-size:1.15rem;margin:22px 0 6px}
 ul{padding-left:1.2em;margin:6px 0}
 li{margin:3px 0}
@@ -48,6 +51,7 @@ li{margin:3px 0}
 <button id="play" type="button">Pause</button>
 <button id="reset" type="button">Reset</button>
 <label class="speed">Speed <input type="range" id="speed" min="0.5" max="3" step="0.25" value="1" aria-label="Animation speed"></label>
+<span class="hint"><span class="sw off"></span> off <span class="sw on"></span> on: the labels in the picture are buttons too, click one to switch it</span>
 </div>
 
 <h2>What to look for</h2>
@@ -72,6 +76,11 @@ const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 const bg=new Image(); bg.src='background.png'; const lb=new Image(); lb.src='labels.png';
 const $=id=>document.getElementById(id);
 const on={vent:false,hepa:false,far:false,upper:false,mask:false};
+const HIT=[];
+function canvasPt(e){const r=cv.getBoundingClientRect();return {x:(e.clientX-r.left)*M.W/r.width,y:(e.clientY-r.top)*M.H/r.height};}
+function hitTag(e){const p=canvasPt(e);return HIT.find(h=>p.x>=h.x0&&p.x<=h.x1&&p.y>=h.y0&&p.y<=h.y1);}
+cv.addEventListener('click',e=>{const h=hitTag(e);if(!h)return;const box=$(h.k);box.checked=!box.checked;box.dispatchEvent(new Event('change'));});
+cv.addEventListener('mousemove',e=>{cv.style.cursor=hitTag(e)?'pointer':'default';});
 ['vent','hepa','far','upper','mask'].forEach(k=>$(k).addEventListener('change',e=>on[k]=e.target.checked));
 let speed=1; $('speed').addEventListener('input',e=>speed=+e.target.value);
 let running=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -209,11 +218,16 @@ function draw(){
     ctx.fillStyle='rgba(255,255,255,0.95)';ctx.beginPath();ctx.roundRect(X(9.0),Y(2.1),X(11.95)-X(9.0),Y(1.66)-Y(2.1),8);ctx.fill();
     ctx.font='28px "DejaVu Sans",Verdana,system-ui,sans-serif';ctx.fillStyle=RED;ctx.textAlign='left';ctx.textBaseline='middle';
     ctx.fillText('Infected patient without a mask:',X(9.05),Y(1.88)-17);ctx.fillText('no source control, more particles',X(9.05),Y(1.88)+17);}
-  const offTag=(x,y,txt)=>{ctx.font='600 26px system-ui,sans-serif';const w=ctx.measureText(txt).width+20;ctx.fillStyle='rgba(60,60,60,0.85)';ctx.beginPath();ctx.roundRect(X(x)-w/2,Y(y)-18,w,36,18);ctx.fill();ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(txt,X(x),Y(y)+1);};
-  if(!on.far)offTag(3.2,2.72,'Far-UVC off');
-  if(!on.vent)offTag(6.05,2.72,'Ventilation off');
-  if(!on.hepa)offTag(8.05,1.4,'HEPA off');
-  if(!on.upper)offTag(10.6,2.55,'UV-C off');
+  HIT.length=0;
+  const tag=(k,x,y,txt)=>{const isOn=on[k];const label=txt+(isOn?' on':' off');ctx.font='600 26px system-ui,sans-serif';const w=ctx.measureText(label).width+58;const x0=X(x)-w/2,y0=Y(y)-19;
+    ctx.fillStyle=isOn?'rgba(0,122,94,0.92)':'rgba(213,94,0,0.92)';ctx.beginPath();ctx.roundRect(x0,y0,w,38,19);ctx.fill();ctx.lineWidth=2.5;ctx.strokeStyle='#fff';ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.35)';ctx.beginPath();ctx.roundRect(x0+8,y0+9,34,20,10);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(isOn?x0+32:x0+18,y0+19,8,0,7);ctx.fill();
+    ctx.fillStyle='#fff';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(label,x0+50,Y(y)+1);HIT.push({k,x0,y0,x1:x0+w,y1:y0+38});};
+  tag('far',3.2,2.72,'Far-UVC');
+  tag('vent',6.05,2.72,'Ventilation');
+  tag('hepa',8.05,1.4,'HEPA');
+  tag('upper',10.6,2.55,'UV-C');
+  tag('mask',10.95,1.45,'Mask');
   if(t-bedLabT<(bedLab==='linen change'?5:2.5)){ctx.font=(bedLab==='linen change'?'italic 600 26px':'italic 24px')+' system-ui,sans-serif';ctx.fillStyle=SQE;ctx.textAlign='center';ctx.fillText(bedLab,X(6.0),Y(0.5));}
 }
 
