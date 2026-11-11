@@ -95,7 +95,7 @@ function reset(){P=[];cnt={staff:0,pt:0,uv:0,hepa:0,ext:0};t=0;for(const b of BE
   for(const x of [2.62,2.75,2.84])P.push({k:'L',x,y:0.79,vx:0,vy:0,act:true,age:0,set:true});}
 reset(); $('reset').addEventListener('click',reset);
 
-const CONE=[[3.03,2.93],[3.37,2.93],[4.1,0.75],[2.3,0.75]];
+const CONE=[[3.03,2.93],[3.37,2.93],[4.2,0.6],[2.05,0.6]];
 const BAND=[[11.85,2.48],[11.85,2.6],[7.6,2.92],[7.6,2.2]];
 function inPoly(x,y,poly){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[xi,yi]=poly[i],[xj,yj]=poly[j];if(((yi>y)!=(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c;}return c;}
 const rnd=(a,b)=>a+Math.random()*(b-a);
@@ -162,7 +162,7 @@ function step(dt){
     p.age+=dt; if(p.fl>0)p.fl-=dt;
     if(p.ia!==undefined){p.ia+=dt;if(p.ia>3)continue;} // inactivated particles fade out after about 3 s
     if(p.set){ // settled particles: far-UVC still reaches surfaces within its footprint, so they turn hollow and fade like airborne ones
-      if(p.act&&on.far&&inPoly(p.x,Math.max(p.y,0.76),CONE)&&Math.random()<2.0*dt){p.act=false;p.fl=0.7;p.ia=0;cnt.uv++;}
+      if(p.act&&on.far&&inPoly(p.x,Math.max(p.y,0.61),CONE)&&Math.random()<2.0*dt){p.act=false;p.fl=0.7;p.ia=0;cnt.uv++;}
       if(p.age<25)keep.push(p);continue;}
     const [fu,fv]=flow(p.x,p.y);
     if(p.k==='L'||p.k==='W'){p.vy-=2.2*dt;p.vx*=1-0.15*dt;}
