@@ -62,6 +62,8 @@ section .lede{color:var(--muted);margin:0 0 16px;max-width:60em}
 .partners{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .partner{border:1px solid var(--line);border-radius:10px;padding:16px;background:#fff}
 .partner .logo{height:64px;display:flex;align-items:center;margin:0 0 12px}
+.partner .logo a{display:inline-block;line-height:0}
+.partner .logo a:hover img{opacity:.75}
 .partner .logo img{max-height:64px;max-width:220px;width:auto;height:auto;object-fit:contain;display:block}
 .partner h3{margin:0 0 4px;font-size:1.02rem}
 .partner p{margin:0;color:var(--muted);font-size:.92rem}
