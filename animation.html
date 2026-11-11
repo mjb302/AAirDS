@@ -87,8 +87,12 @@ let speed=1; $('speed').addEventListener('input',e=>speed=+e.target.value);
 let running=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const playBtn=$('play'); playBtn.textContent=running?'Pause':'Play';
 playBtn.addEventListener('click',()=>{running=!running;playBtn.textContent=running?'Pause':'Play';last=performance.now();});
-let P=[], cnt, t=0, bedN=0, bedLab='', bedLabT=-99;
-function reset(){P=[];cnt={staff:0,pt:0,uv:0,hepa:0,ext:0};t=0;bedN=0;bedLabT=-99;}
+let P=[], cnt, t=0;
+// three beds, each with its own rhythm of patient movement (every third one a full linen change), deliberately out of step with each other
+const BEDS=[{x0:0.8,x1:2.3,lx:1.5,period:11,off:4,n:0,lab:'',labT:-99},{x0:5.2,x1:6.9,lx:6.05,period:9,off:0,n:0,lab:'',labT:-99},{x0:10.0,x1:11.5,lx:10.7,period:13,off:7,n:0,lab:'',labT:-99}];
+function reset(){P=[];cnt={staff:0,pt:0,uv:0,hepa:0,ext:0};t=0;for(const b of BEDS){b.n=0;b.lab='';b.labT=-99;}
+  // three settled particles on the bedside table at the start (they fade, far-UVC can inactivate them, and reset clears them)
+  for(const x of [2.62,2.75,2.84])P.push({k:'L',x,y:0.79,vx:0,vy:0,act:true,age:0,set:true});}
 reset(); $('reset').addEventListener('click',reset);
 
 const CONE=[[3.03,2.93],[3.37,2.93],[4.1,0.75],[2.3,0.75]];
@@ -139,14 +143,15 @@ function step(dt){
     exhale(0.93,1.22,1,1,false);
     if(on.mask) exhale(10.12,1.2,1,0.1,true); else exhale(10.12,1.22,1,1,false);
   }
-  // patient movement on the middle bed every 9 s
-  if(t%9<dt){
-    bedN++; const linen=bedN%3===0;   // every third resuspension is a full linen change
-    for(let i=0;i<12;i++)emit('Q',rnd(5.2,6.9),0.72,rnd(-0.25,0.25),rnd(0.5,1.0),{shape:flakeShape(),bug:Math.random()<0.5});
-    if(linen)for(let i=0;i<14;i++)emit('Q',rnd(5.1,7.0),0.75,rnd(-0.35,0.35),rnd(1.0,1.6),{shape:flakeShape(),bug:Math.random()<0.5,lift:rnd(2.0,3.2)});
-    bedLab=linen?'linen change':'patient movement'; bedLabT=t;
+  // patient movement on each bed on its own cycle; every third event is a full linen change
+  for(const b of BEDS){
+    const tb=t-b.off; if(tb<0||tb%b.period>=dt)continue;
+    b.n++; const linen=b.n%3===0;
+    for(let i=0;i<12;i++)emit('Q',rnd(b.x0,b.x1),0.72,rnd(-0.25,0.25),rnd(0.5,1.0),{shape:flakeShape(),bug:Math.random()<0.5});
+    if(linen)for(let i=0;i<14;i++)emit('Q',rnd(b.x0-0.1,b.x1+0.1),0.75,rnd(-0.35,0.35),rnd(1.0,1.6),{shape:flakeShape(),bug:Math.random()<0.5,lift:rnd(2.0,3.2)});
+    b.lab=linen?'linen change':'patient movement'; b.labT=t;
   }
-  if(Math.random()<0.4*dt)emit('Q',rnd(5.2,6.9),0.72,rnd(-0.1,0.1),rnd(0.2,0.4),{shape:flakeShape(),bug:Math.random()<0.5});
+  for(const b of BEDS)if(Math.random()<(b.period===9?0.4:0.2)*dt)emit('Q',rnd(b.x0,b.x1),0.72,rnd(-0.1,0.1),rnd(0.2,0.4),{shape:flakeShape(),bug:Math.random()<0.5});
   // sink runs for 2 s every 7 s
   if(t%7<2){
     if(Math.random()<6*dt){const s=Math.random()<0.5?-1:1;emit('W',4.42,0.92,s*rnd(0.3,0.75),rnd(0.3,0.65));}
@@ -156,7 +161,9 @@ function step(dt){
   for(const p of P){
     p.age+=dt; if(p.fl>0)p.fl-=dt;
     if(p.ia!==undefined){p.ia+=dt;if(p.ia>3)continue;} // inactivated particles fade out after about 3 s
-    if(p.set){if(p.age<25)keep.push(p);continue;}
+    if(p.set){ // settled particles: far-UVC still reaches surfaces within its footprint, so they turn hollow and fade like airborne ones
+      if(p.act&&on.far&&inPoly(p.x,Math.max(p.y,0.76),CONE)&&Math.random()<2.0*dt){p.act=false;p.fl=0.7;p.ia=0;cnt.uv++;}
+      if(p.age<25)keep.push(p);continue;}
     const [fu,fv]=flow(p.x,p.y);
     if(p.k==='L'||p.k==='W'){p.vy-=2.2*dt;p.vx*=1-0.15*dt;}
     else{
@@ -230,7 +237,7 @@ function draw(){
   tag('hepa',X(7.3),Y(1.3),'HEPA');
   tag('upper',X(10.6),Y(2.6),'UV-C');
   tag('mask',X(11.15),Y(1.02),'Mask');
-  if(t-bedLabT<(bedLab==='linen change'?5:2.5)){ctx.font=(bedLab==='linen change'?'italic 600 26px':'italic 24px')+' system-ui,sans-serif';ctx.fillStyle=SQE;ctx.textAlign='center';ctx.fillText(bedLab,X(6.0),Y(0.5));}
+  for(const b of BEDS)if(t-b.labT<(b.lab==='linen change'?5:2.5)){ctx.font=(b.lab==='linen change'?'italic 600 26px':'italic 24px')+' system-ui,sans-serif';ctx.fillStyle=SQE;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(b.lab,X(b.lx),Y(0.5));}
 }
 
 let last=performance.now(), lastUI=0;
