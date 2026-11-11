@@ -90,9 +90,7 @@ playBtn.addEventListener('click',()=>{running=!running;playBtn.textContent=runni
 let P=[], cnt, t=0;
 // three beds, each with its own rhythm of patient movement (every third one a full linen change), deliberately out of step with each other
 const BEDS=[{x0:0.8,x1:2.3,lx:1.5,period:11,off:4,n:0,lab:'',labT:-99},{x0:5.2,x1:6.9,lx:6.05,period:9,off:0,n:0,lab:'',labT:-99},{x0:10.0,x1:11.5,lx:10.7,period:13,off:7,n:0,lab:'',labT:-99}];
-function reset(){P=[];cnt={staff:0,pt:0,uv:0,hepa:0,ext:0};t=0;for(const b of BEDS){b.n=0;b.lab='';b.labT=-99;}
-  // three settled particles on the bedside table at the start (they fade, far-UVC can inactivate them, and reset clears them)
-  for(const x of [2.62,2.75,2.84])P.push({k:'L',x,y:0.79,vx:0,vy:0,act:true,age:0,set:true});}
+function reset(){P=[];cnt={staff:0,pt:0,uv:0,hepa:0,ext:0};t=0;for(const b of BEDS){b.n=0;b.lab='';b.labT=-99;}}
 reset(); $('reset').addEventListener('click',reset);
 
 const CONE=[[3.03,2.93],[3.37,2.93],[4.2,0.6],[2.05,0.6]];
