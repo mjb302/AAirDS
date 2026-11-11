@@ -1,8 +1,8 @@
-# Ward Air
+# AAirDS: Ward Air
 
 Research portfolio site for the Addenbrooke's Air Disinfection Study (AAirDS) and collaborators: how respiratory infection moves through the air of hospital wards for older people, and what can be measured and changed.
 
-Live: https://mjb302.github.io/ward-air/
+Live: https://mjb302.github.io/AAirDS/
 
 - `index.html`: landing page with the animated schematic (`animation.html`, embedded) and the gallery of 38 computational fluid dynamics animations (`videos.js` holds titles and legends).
 - `publications.html`, `team.html`, `partners.html`.
