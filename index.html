@@ -25,7 +25,7 @@
 <section id="animation">
 <h2>Ward air in motion</h2>
 <p class="lede">An animated schematic of how exhaled particles leave an infected patient, travel through the air of a bay, and where ventilation, portable HEPA air cleaners, ultraviolet light and masks act. Use the controls to switch each intervention on and off.</p>
-<div class="stage"><iframe id="anim" src="animation.html?embed=1&v=2" title="Ward air in motion: animated schematic" loading="eager"></iframe></div>
+<div class="stage"><iframe id="anim" src="animation.html?embed=1&v=3" title="Ward air in motion: animated schematic" loading="eager"></iframe></div>
 <p class="caption">Schematic, not a physical simulation: particle numbers, speeds and inactivation rates are illustrative. Terminology follows the WHO 2024 consultation on pathogens that transmit through the air. <a href="animation.html">Open the animation on its own page</a>.</p>
 </section>
 
@@ -71,7 +71,7 @@
 // animation iframe height: same origin on the web, fallback ratio on file://
 const f=document.getElementById('anim');
 function fit(){try{const h=f.contentWindow.document.documentElement.scrollHeight;if(h>100){f.style.height=h+'px';return}}catch(e){}
- f.style.height=Math.round(f.clientWidth*0.5926+80)+'px'}
+ f.style.height=Math.round(f.clientWidth*0.5417+80)+'px'}
 f.addEventListener('load',fit);window.addEventListener('resize',fit);fit();
 // gallery
 const GROUPS=[
